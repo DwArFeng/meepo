@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xmlns="http://www.springframework.org/schema/beans"
+        xsi:schemaLocation="http://www.springframework.org/schema/beans
+        http://www.springframework.org/schema/beans/spring-beans.xsd"
+>
+
+    <!-- 注册表达式解析器以及对应的上下文 -->
+    <bean class="org.springframework.expression.spel.standard.SpelExpressionParser"/>
+    <bean class="org.springframework.expression.common.TemplateParserContext"/>
+</beans>

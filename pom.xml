@@ -43,8 +43,8 @@
         <maven-deploy-plugin.version>2.8.2</maven-deploy-plugin.version>
         <maven-compiler-plugin.version>3.8.1</maven-compiler-plugin.version>
         <!-- 主方法类声明 -->
-        <mainClass.daemon>com.dwarfeng.metronome.daemon.launcher.Launcher</mainClass.daemon>
-        <mainClass.exec>com.dwarfeng.metronome.exec.launcher.Launcher</mainClass.exec>
+        <mainClass.daemon>com.dwarfeng.meepo.launcher.daemon.Launcher</mainClass.daemon>
+        <mainClass.poof>com.dwarfeng.meepo.launcher.poof.Launcher</mainClass.poof>
     </properties>
 
     <!-- 只定义依赖的版本，并不实际依赖 -->

@@ -1,0 +1,100 @@
+#file: noinspection SpellCheckingInspection
+
+# ----------------------------------------------------------------------------------------------
+# drivers.yaml
+#
+# 该配置文件定义了 meepo 的执行列表，每个执行都是一个定时任务，用于执行某个任务。
+# 配置文件的格式如下:
+#
+# - id: "test1"
+#   condition_command_infos:
+#     - id: "foo"
+#       command: "cmd /c foo.bat"
+#     - id: "bar"
+#       command: "cmd /c bar.bat"
+#   module_command_infos:
+#     - id: "baz"
+#       command: "cmd /c baz.bat"
+#     - id: "qux"
+#       command: "cmd /c qux.bat"
+#   observer_command_infos:
+#     - id: "quux"
+#       command: "cmd /c quux.bat"
+#     - id: "corge"
+#       command: "cmd /c corge.bat"
+#   continue_on_failure: true
+#
+# id: 任务执行器的 id，用于标识一个执行任务，必须在配置文件中唯一。
+#   - id 必须符合规范，只能包含字母、数字、下划线和中划线。
+# condition_command_infos: 任务的前置条件命令列表，用于定义任务的前置条件。
+#   - 前置条件用于判断任务是否可以执行，如果所有前置条件执行成功，则任务可以执行，否则任务不能执行。
+#   - 如果执行器不需要前置条件，则 condition_command_infos 可以为空。
+#   - 前置条件命令包含 id 和 command 两个字段。
+#   id： 前置条件命令的 id，用于标识一个前置条件命令，必须单个任务中唯一。
+#     - id 必须符合规范，只能包含字母、数字、下划线和中划线。
+#     - id 在单个任务内必须唯一，不得与 condition_command_infos, module_command_infos, observer_command_infos
+#       中的其他 id 重复。
+#     - id 可以与其所属的任务 id 相同，也可以和其它任务的 id 及其下的命令信息的 id 相同。
+#   command： 前置条件命令的执行命令，用于执行前置条件命令，支持参数化。
+#     - #{[a1]} 在指令解析时会被替换为任务执行器的 id。
+#     - #{[a2]} 在指令解析时会被替换为前置条件命令的 id。
+# module_command_infos: 任务的前置条件命令列表，用于定义任务的前置条件。
+#   - 模块是任务的核心执行部分，每个模块应该完成一个具体的功能。
+#   - 模块命令包含 id 和 command 两个字段。
+#   id： 模块命令的 id，用于标识一个模块命令，必须单个任务中唯一。
+#     - id 必须符合规范，只能包含字母、数字、下划线和中划线。
+#     - id 在单个任务内必须唯一，不得与 condition_command_infos, module_command_infos, observer_command_infos
+#       中的其他 id 重复。
+#     - id 可以与其所属的任务 id 相同，也可以和其它任务的 id 及其下的命令信息的 id 相同。
+#   command： 模块命令的执行命令，用于执行模块命令，支持参数化。
+#     - #{[a1]} 在指令解析时会被替换为任务执行器的 id。
+#     - #{[a2]} 在指令解析时会被替换为模块命令的 id。
+# observer_command_infos: 任务的前置条件命令列表，用于定义任务的前置条件。
+#   - 观察器用于侦听执行过程中的事件，可以用于记录执行过程、监控执行过程、处理执行过程中的异常等。
+#   - 如果执行器不需要观察器，则 observer_command_infos 可以为空。
+#   - 观察器命令包含 id 和 command 两个字段。
+#   id： 观察器命令的 id，用于标识一个观察器命令，必须单个任务中唯一。
+#     - id 必须符合规范，只能包含字母、数字、下划线和中划线。
+#     - id 在单个任务内必须唯一，不得与 condition_command_infos, module_command_infos, observer_command_infos
+#       中的其他 id 重复。
+#     - id 可以与其所属的任务 id 相同，也可以和其它任务的 id 及其下的命令信息的 id 相同。
+#   command： 观察器命令的执行命令，用于执行观察器命令，支持参数化。
+#     - #{[a1]} 在指令解析时会被替换为任务执行器的 id。
+#     - #{[a2]} 在指令解析时会被替换为观察器命令的 id。
+#     - #{[a3]} 在指令解析时会被替换为事件的类型，其可能的值如下：
+#       - CONDITION_PASSED：前置条件执行成功。
+#       - CONDITION_NOT_PASSED：前置条件执行失败。
+#       - MODULES_STARTED：模块开始执行。
+#       - MODULES_FINISHED：模块执行结束。
+#       - MODULE_STARTED：单个模块开始执行。
+#       - MODULE_FINISHED：单个模块执行结束。
+#       - MODULE_FAILED：单个模块执行失败。
+#     - #{[a4]} 在指令解析时会被替换为:
+#       - 当 #{[a3]} 为 CONDITION_NOT_PASSED 时，该值将会被替换为失败的前置条件命令的 id。
+#       - 当 #{[a3]} 为 MODULES_FINISHED 时，该值将会被替换为执行过的所有的模块命令的 id，以逗号分隔。
+#       - 当 #{[a3]} 为 MODULE_STARTED 时，该值将会被替换为当前执行的模块命令的 id。
+#       - 当 #{[a3]} 为 MODULE_FINISHED 时，该值将会被替换为当前执行的模块命令的 id。
+#       - 当 #{[a3]} 为 MODULE_FAILED 时，该值将会被替换为当前执行失败的模块命令的 id。
+#     - #{[a5]} 在指令解析时会被替换为：
+#       - 当 #{[a3]} 为 MODULES_FINISHED 时，该值将会被替换为执行成功的所有的模块命令的 id，以逗号分隔。
+#     - #{[a6]} 在指令解析时会被替换为
+#       - 当 #{[a3]} 为 MODULES_FINISHED 时，该值将会被替换为执行失败的所有的模块命令的 id，以逗号分隔。
+# continue_on_failure: 任务执行失败时是否继续执行后续任务。
+# ----------------------------------------------------------------------------------------------
+- id: "test1"
+  condition_command_infos:
+    - id: "foo"
+      command: "cmd /c foo.bat #{[a1]} #{[a2]}"
+    - id: "bar"
+      command: "cmd /c bar.bat #{[a1]} #{[a2]}"
+  module_command_infos:
+    - id: "baz"
+      command: "cmd /c baz.bat #{[a1]} #{[a2]}"
+    - id: "qux"
+      command: "cmd /c qux.bat #{[a1]} #{[a2]}"
+  observer_command_infos:
+    - id: "quux"
+      command: "cmd /c quux.bat #{[a1]} #{[a2]} #{[a3]} #{[a4]} #{[a5]} #{[a6]}"
+    - id: "corge"
+      command: "cmd /c corge.bat #{[a1]} #{[a2]} #{[a3]} #{[a4]} #{[a5]} #{[a6]}"
+  continue_on_failure: true
