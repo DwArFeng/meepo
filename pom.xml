@@ -27,6 +27,7 @@
         <javassist.version>3.23.2-GA</javassist.version>
         <junit.version>4.13.2</junit.version>
         <spring.version>5.3.31</spring.version>
+        <fastjson.version>1.2.83</fastjson.version>
         <snakeyaml.version>2.0</snakeyaml.version>
         <aspectj.version>1.8.2</aspectj.version>
         <slf4j.version>1.7.36</slf4j.version>
@@ -67,6 +68,12 @@
                 <groupId>org.yaml</groupId>
                 <artifactId>snakeyaml</artifactId>
                 <version>${snakeyaml.version}</version>
+            </dependency>
+            <!-- FastJson Json 处理工具包 -->
+            <dependency>
+                <groupId>com.alibaba</groupId>
+                <artifactId>fastjson</artifactId>
+                <version>${fastjson.version}</version>
             </dependency>
             <!-- 单元测试 -->
             <dependency>
@@ -215,10 +222,6 @@
                         <artifactId>spring-jdbc</artifactId>
                         <groupId>org.springframework</groupId>
                     </exclusion>
-                    <exclusion>
-                        <artifactId>fastjson</artifactId>
-                        <groupId>com.alibaba</groupId>
-                    </exclusion>
                 </exclusions>
             </dependency>
             <dependency>
@@ -333,6 +336,11 @@
         <dependency>
             <groupId>org.yaml</groupId>
             <artifactId>snakeyaml</artifactId>
+        </dependency>
+        <!-- FastJson Json 处理工具包 -->
+        <dependency>
+            <groupId>com.alibaba</groupId>
+            <artifactId>fastjson</artifactId>
         </dependency>
         <!-- 单元测试 -->
         <dependency>
