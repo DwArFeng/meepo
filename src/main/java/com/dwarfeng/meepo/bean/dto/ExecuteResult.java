@@ -1,5 +1,6 @@
 package com.dwarfeng.meepo.bean.dto;
 
+import com.alibaba.fastjson.annotation.JSONField;
 import com.dwarfeng.subgrade.stack.bean.dto.Dto;
 
 import java.util.List;
@@ -14,10 +15,18 @@ public class ExecuteResult implements Dto {
 
     private static final long serialVersionUID = 42602392138379527L;
 
+    @JSONField(name = "condition_passed", ordinal = 1)
     private boolean conditionPassed;
+
+    @JSONField(name = "executed_command_ids", ordinal = 2)
     private List<String> executedCommandIds;
+
+    @JSONField(name = "finished_command_ids", ordinal = 3)
     private List<String> finishedCommandIds;
+
+    @JSONField(name = "failed_command_ids", ordinal = 4)
     private List<String> failedCommandIds;
+
 
     public ExecuteResult() {
     }

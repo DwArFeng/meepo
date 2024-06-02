@@ -1,5 +1,8 @@
 package com.dwarfeng.meepo.handler.daemon;
 
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.serializer.SerializerFeature;
+import com.dwarfeng.meepo.bean.dto.ArrivalResponse;
 import com.dwarfeng.meepo.bean.dto.ExecuteResult;
 import com.dwarfeng.meepo.util.Constants;
 import com.dwarfeng.subgrade.sdk.exception.HandlerExceptionHelper;
@@ -18,7 +21,10 @@ import javax.annotation.PreDestroy;
 import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.util.*;
+import java.util.Date;
+import java.util.HashSet;
+import java.util.Set;
+import java.util.UUID;
 import java.util.concurrent.CompletionException;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.locks.Condition;
@@ -234,35 +240,46 @@ public class ArrivalHandlerImpl implements ArrivalHandler {
         }
 
         private void doRun() throws Exception {
-            // 从 socketIn 中读取单行文本，作为执行器的 ID。
-            String executorId = readContent(clientSocket.getInputStream());
-
-            // 执行任务，并获取执行结果。
+            boolean exceptionFlag = false;
+            String exceptionMessage = null;
             ExecuteResult executeResult = null;
-            Exception executeException = null;
+
             try {
-                executeResult = executeHandler.executeAsync(executorId).get();
+                // 从 socketIn 中读取单行文本，作为执行器的 ID。
+                String executorId = readContent(clientSocket.getInputStream());
+
+                // 执行任务，并获取执行结果。
+                executeResult = doExecute(executorId);
             } catch (Exception e) {
-                if (e instanceof CompletionException) {
-                    executeException = (Exception) e.getCause();
-                } else {
-                    executeException = e;
-                }
+                LOGGER.warn("执行任务时发生异常, 异常信息如下: ", e);
+                exceptionFlag = true;
+                exceptionMessage = e.getMessage();
             }
 
-            // 如果 executeException 不是 null，则记录异常信息。
-            if (Objects.nonNull(executeException)) {
-                LOGGER.warn("执行任务时发生异常, 异常信息如下: ", executeException);
-            }
+            // 将任务执行情况转换为 ArrivalResponse。
+            ArrivalResponse arrivalResponse = new ArrivalResponse(exceptionFlag, exceptionMessage, executeResult);
 
-            // 将 executeResult 转换为返回代码，并返回。
-            String executeResultCode = convertExecuteResultToCode(executeResult, executeException);
+            // 将 ArrivalResponse 序列化为 JSON 字符串。
+            String responseString = JSON.toJSONString(
+                    arrivalResponse, SerializerFeature.PrettyFormat, SerializerFeature.WriteMapNullValue
+            );
 
             // 将返回代码写入 socketOut。
-            writeContent(clientSocket.getOutputStream(), executeResultCode);
+            writeContent(clientSocket.getOutputStream(), responseString);
         }
 
-        @SuppressWarnings("DuplicatedCode")
+        private ExecuteResult doExecute(String executorId) throws Exception {
+            try {
+                return executeHandler.executeAsync(executorId).get();
+            } catch (Exception e) {
+                if (e instanceof CompletionException) {
+                    throw (Exception) e.getCause();
+                } else {
+                    throw e;
+                }
+            }
+        }
+
         private String readContent(InputStream socketIn) throws Exception {
             Reader reader = new InputStreamReader(socketIn, Constants.CHARSET);
             StringBuilder stringBuilder = new StringBuilder();
@@ -275,31 +292,6 @@ public class ArrivalHandlerImpl implements ArrivalHandler {
                 }
             }
             return stringBuilder.toString().trim();
-        }
-
-        private String convertExecuteResultToCode(ExecuteResult executeResult, Exception executeException) {
-            // 如果没有异常。
-            if (Objects.nonNull(executeResult)) {
-                // 如果 !conditionPassed。
-                if (!executeResult.isConditionPassed()) {
-                    return Constants.POOF_CODE_CONDITION_NOT_PASSED;
-                }
-                // 如果 executeResult 中的所有指令均执行成功。
-                else if (executeResult.getFailedCommandIds().isEmpty()) {
-                    return Constants.POOF_CODE_SUCCESS;
-                } else {
-                    // 如果 executeResult 中至少有一条指令执行失败。
-                    return Constants.POOF_CODE_FAILED;
-                }
-            }
-            // 如果有异常。
-            else if (Objects.nonNull(executeException)) {
-                return Constants.POOF_CODE_EXCEPTION;
-            }
-            // 如果不属于上述情况。
-            else {
-                return Constants.POOF_CODE_UNKNOWN;
-            }
         }
 
         private void writeContent(OutputStream socketOut, String content) throws Exception {

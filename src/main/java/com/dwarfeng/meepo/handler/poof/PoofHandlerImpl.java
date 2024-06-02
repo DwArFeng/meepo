@@ -1,18 +1,22 @@
 package com.dwarfeng.meepo.handler.poof;
 
+import com.alibaba.fastjson.JSON;
+import com.dwarfeng.meepo.bean.dto.ArrivalResponse;
+import com.dwarfeng.meepo.bean.dto.ExecuteResult;
 import com.dwarfeng.meepo.util.Constants;
 import com.dwarfeng.subgrade.sdk.exception.HandlerExceptionHelper;
 import com.dwarfeng.subgrade.stack.exception.HandlerException;
 import org.springframework.stereotype.Component;
 
-import java.io.*;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
+import java.io.Writer;
 import java.net.Socket;
 import java.util.Objects;
 
 @Component
 public class PoofHandlerImpl implements PoofHandler {
-
-    private static final int SOCKET_IN_BUFFER_SIZE = 4096;
 
     @Override
     public int poof(String host, int port, String id) throws HandlerException {
@@ -36,11 +40,11 @@ public class PoofHandlerImpl implements PoofHandler {
             // 将 id 发送至服务端。
             writeContent(socketOut, id);
 
-            // 读取服务端的返回值。
-            String executionCodeString = readContent(socketIn);
+            // 将服务端的返回响应序列化为 ArrivalResponse 对象。
+            ArrivalResponse arrivalResponse = JSON.parseObject(socketIn, ArrivalResponse.class);
 
-            // 将返回值转换为整数并返回。
-            return Integer.parseInt(executionCodeString);
+            // 将 arrivalResponse 解析为 Poof 响应码并返回。
+            return parseExitCode(arrivalResponse);
         } finally {
             if (Objects.nonNull(socket)) {
                 socket.close();
@@ -48,24 +52,40 @@ public class PoofHandlerImpl implements PoofHandler {
         }
     }
 
-    @SuppressWarnings("DuplicatedCode")
-    private String readContent(InputStream socketIn) throws Exception {
-        Reader reader = new InputStreamReader(socketIn, Constants.CHARSET);
-        StringBuilder stringBuilder = new StringBuilder();
-        char[] buffer = new char[SOCKET_IN_BUFFER_SIZE];
-        int len;
-        while ((len = reader.read(buffer)) != -1) {
-            stringBuilder.append(buffer, 0, len);
-            if (stringBuilder.indexOf(Constants.LINE_SEPARATOR) != -1) {
-                break;
-            }
-        }
-        return stringBuilder.toString().trim();
-    }
-
     private void writeContent(OutputStream socketOut, String content) throws Exception {
         Writer writer = new OutputStreamWriter(socketOut, Constants.CHARSET);
         writer.write(content + Constants.LINE_SEPARATOR);
         writer.flush();
+    }
+
+    private int parseExitCode(ArrivalResponse arrivalResponse) {
+        // 如果 exceptionFlag 为 true，返回 POOF_RESPONSE_CODE_EXCEPTION。
+        if (arrivalResponse.isExceptionFlag()) {
+            // 返回异常码。
+            return Constants.POOF_RESPONSE_CODE_EXCEPTION;
+        }
+        // 获取 executeResult。
+        ExecuteResult executeResult = arrivalResponse.getExecuteResult();
+        // 如果 executeResult 为 null，返回 POOF_RESPONSE_CODE_UNKNOWN。
+        if (Objects.isNull(executeResult)) {
+            // 返回未知码。
+            return Constants.POOF_RESPONSE_CODE_UNKNOWN;
+        }
+        // 进一步解析 executeResult：
+        // 如果 !conditionPassed，返回 POOF_RESPONSE_CODE_CONDITION_NOT_PASSED。
+        if (!executeResult.isConditionPassed()) {
+            // 返回条件未通过码。
+            return Constants.POOF_RESPONSE_CODE_CONDITION_NOT_PASSED;
+        }
+        // 如果 executeResult 中的所有指令均执行成功，返回 POOF_RESPONSE_CODE_SUCCESS。
+        if (executeResult.getFailedCommandIds().isEmpty()) {
+            // 返回成功码。
+            return Constants.POOF_RESPONSE_CODE_SUCCESS;
+        }
+        // 如果 executeResult 中至少有一条指令执行失败，返回 POOF_RESPONSE_CODE_FAILED。
+        else {
+            // 返回失败码。
+            return Constants.POOF_RESPONSE_CODE_FAILED;
+        }
     }
 }
