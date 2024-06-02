@@ -466,7 +466,8 @@ public class ExecuteHandlerImpl implements ExecuteHandler {
             }
         }
 
-        private int runProcess(ExecuteInfo.CommandInfo commandInfo, Map<String, String> argMap, File dir) throws Exception {
+        private int runProcess(ExecuteInfo.CommandInfo commandInfo, Map<String, String> argMap, File dir)
+                throws Exception {
             // 展开参数。
             String id = commandInfo.getId();
             String command = commandInfo.getCommand();

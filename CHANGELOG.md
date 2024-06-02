@@ -4,6 +4,9 @@
 
 #### 功能构建
 
+- 优化部分代码的格式。
+  - com.dwarfeng.meepo.handler.daemon.ExecuteHandlerImpl。
+
 - 优化 Poof 功能的数据交互机制。
   - Daemon 接受到 poof 并处理请求后，向 poof 端发送 ArrivalResponse，而不再只发送状态码。
 
