@@ -27,7 +27,6 @@ public class ExecuteResult implements Dto {
     @JSONField(name = "failed_command_ids", ordinal = 4)
     private List<String> failedCommandIds;
 
-
     public ExecuteResult() {
     }
 
