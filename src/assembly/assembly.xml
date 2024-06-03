@@ -89,8 +89,11 @@
             <outputDirectory>libcmd</outputDirectory>
             <directory>src/main/resources/libcmd</directory>
             <includes>
-                <include>*/*</include>
+                <include>**/*</include>
             </includes>
+            <excludes>
+                <exclude>**/README.md</exclude>
+            </excludes>
             <filtered>true</filtered>
             <fileMode>755</fileMode>
         </fileSet>

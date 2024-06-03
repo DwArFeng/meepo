@@ -12,9 +12,7 @@ import java.nio.charset.StandardCharsets;
  */
 public final class Constants {
 
-    public static final File DIR_LIBCMD_CONDITION = new File("libcmd" + File.separator + "condition");
-    public static final File DIR_LIBCMD_MODULE = new File("libcmd" + File.separator + "module");
-    public static final File DIR_LIBCMD_OBSERVER = new File("libcmd" + File.separator + "observer");
+    public static final File DIR_LIBCMD = new File("libcmd");
 
     public static final File FILE_EXECUTORS_CONFIG = new File(
             "conf" + File.separator + "meepo" + File.separator + "daemon" + File.separator + "executors.yaml"

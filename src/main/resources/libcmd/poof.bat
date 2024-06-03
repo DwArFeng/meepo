@@ -1,7 +1,7 @@
 @echo off
 
 rem 设置程序的根目录。
-cd /d "%~dp0..\.."
+cd /d "%~dp0.."
 SET "basedir=%cd%"
 
 rem JVM 内存设置。

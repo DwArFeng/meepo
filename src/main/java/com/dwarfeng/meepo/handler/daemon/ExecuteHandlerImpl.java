@@ -337,7 +337,7 @@ public class ExecuteHandlerImpl implements ExecuteHandler {
                 argMap.put(COMMAND_PLACEHOLDER_PARAM_1, executeInfo.getId());
                 argMap.put(COMMAND_PLACEHOLDER_PARAM_2, id);
                 // 执行条件指令。
-                return runProcess(commandInfo, argMap, Constants.DIR_LIBCMD_CONDITION) == 0;
+                return runProcess(commandInfo, argMap, Constants.DIR_LIBCMD) == 0;
             } catch (Exception e) {
                 String message = "检查条件指令时发生异常, 该条件指令将被视为未通过, 执行任务 ID: " +
                         executeInfo.getId() + ", 条件指令 ID: " + id + ", 异常信息如下:";
@@ -399,7 +399,7 @@ public class ExecuteHandlerImpl implements ExecuteHandler {
                 argMap.put(COMMAND_PLACEHOLDER_PARAM_1, executeInfo.getId());
                 argMap.put(COMMAND_PLACEHOLDER_PARAM_2, id);
                 // 执行模块指令。
-                success = runProcess(commandInfo, argMap, Constants.DIR_LIBCMD_MODULE) == 0;
+                success = runProcess(commandInfo, argMap, Constants.DIR_LIBCMD) == 0;
             } catch (Exception e) {
                 String message = "执行模块指令时发生异常, 该模块指令将被视为执行失败, 执行任务 ID: " +
                         executeInfo.getId() + ", 模块指令 ID: " + id + ", 异常信息如下:";
@@ -458,7 +458,7 @@ public class ExecuteHandlerImpl implements ExecuteHandler {
 
         private void fireSingleObserver(ExecuteInfo.CommandInfo commandInfo, Map<String, String> argMap) {
             try {
-                runProcess(commandInfo, argMap, Constants.DIR_LIBCMD_OBSERVER);
+                runProcess(commandInfo, argMap, Constants.DIR_LIBCMD);
             } catch (Exception e) {
                 String message = "执行观察器指令时发生异常, 该观察器指令将被忽略, 执行任务 ID: " +
                         executeInfo.getId() + ", 观察器指令 ID: " + commandInfo.getId() + ", 异常信息如下:";
