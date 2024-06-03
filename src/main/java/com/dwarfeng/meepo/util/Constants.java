@@ -31,6 +31,7 @@ public final class Constants {
     public static final String OBSERVER_EVENT_MODULE_FAILED = "MODULE_FAILED";
 
     public static final int POOF_RESPONSE_CODE_SUCCESS = 0;
+    public static final int POOF_RESPONSE_CODE_ADDRESS_BLOCKED = 400;
     public static final int POOF_RESPONSE_CODE_EXCEPTION = 500;
     public static final int POOF_RESPONSE_CODE_CONDITION_NOT_PASSED = 600;
     public static final int POOF_RESPONSE_CODE_FAILED = 601;

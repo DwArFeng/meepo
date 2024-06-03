@@ -59,6 +59,11 @@ public class PoofHandlerImpl implements PoofHandler {
     }
 
     private int parseExitCode(ArrivalResponse arrivalResponse) {
+        // 如果 address_blocked_flag 为 true，返回 POOF_RESPONSE_CODE_ADDRESS_NOT_PASSED。
+        if (arrivalResponse.isAddressBlockedFlag()) {
+            // 返回地址未通过码。
+            return Constants.POOF_RESPONSE_CODE_ADDRESS_BLOCKED;
+        }
         // 如果 exceptionFlag 为 true，返回 POOF_RESPONSE_CODE_EXCEPTION。
         if (arrivalResponse.isExceptionFlag()) {
             // 返回异常码。

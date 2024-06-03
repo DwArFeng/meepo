@@ -4,6 +4,9 @@
 
 #### 功能构建
 
+- 增强 Poof - Arrival 机制。
+  - 增加了黑白名单机制，以便 Daemon 端可以根据黑白名单来决定是否接受 Poof 端的请求。
+
 - 优化部分代码的格式。
   - com.dwarfeng.meepo.handler.daemon.ExecuteHandlerImpl。
 

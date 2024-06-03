@@ -7,6 +7,7 @@ import com.dwarfeng.meepo.bean.dto.ExecuteResult;
 import com.dwarfeng.meepo.util.Constants;
 import com.dwarfeng.subgrade.sdk.exception.HandlerExceptionHelper;
 import com.dwarfeng.subgrade.stack.exception.HandlerException;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -53,6 +54,10 @@ public class ArrivalHandlerImpl implements ArrivalHandler {
 
     @Value("#{${daemon.arrival.server_socket_port:T(com.dwarfeng.meepo.util.Constants).ARRIVAL_DEFAULT_PORT}}")
     private int serverSocketPort;
+    @Value("${daemon.arrival.whitelist_regex:}")
+    private String whitelistRegex;
+    @Value("${daemon.arrival.blacklist_regex:}")
+    private String blacklistRegex;
 
     public ArrivalHandlerImpl(
             ApplicationContext ctx,
@@ -240,24 +245,8 @@ public class ArrivalHandlerImpl implements ArrivalHandler {
         }
 
         private void doRun() throws Exception {
-            boolean exceptionFlag = false;
-            String exceptionMessage = null;
-            ExecuteResult executeResult = null;
-
-            try {
-                // 从 socketIn 中读取单行文本，作为执行器的 ID。
-                String executorId = readContent(clientSocket.getInputStream());
-
-                // 执行任务，并获取执行结果。
-                executeResult = doExecute(executorId);
-            } catch (Exception e) {
-                LOGGER.warn("执行任务时发生异常, 异常信息如下: ", e);
-                exceptionFlag = true;
-                exceptionMessage = e.getMessage();
-            }
-
             // 将任务执行情况转换为 ArrivalResponse。
-            ArrivalResponse arrivalResponse = new ArrivalResponse(exceptionFlag, exceptionMessage, executeResult);
+            ArrivalResponse arrivalResponse = doArrival();
 
             // 将 ArrivalResponse 序列化为 JSON 字符串。
             String responseString = JSON.toJSONString(
@@ -266,6 +255,45 @@ public class ArrivalHandlerImpl implements ArrivalHandler {
 
             // 将返回代码写入 socketOut。
             writeContent(clientSocket.getOutputStream(), responseString);
+        }
+
+        private ArrivalResponse doArrival() {
+            try {
+                // 获取客户端地址。
+                String address = clientSocket.getInetAddress().getHostAddress();
+
+                // 检查地址是否通过黑白名单。
+                if (!checkAddress(address)) {
+                    LOGGER.info("IP 地址 {} 未通过黑白名单检查, 拒绝执行任务", address);
+                    return new ArrivalResponse(true, false, null, null);
+                }
+
+                // 从 socketIn 中读取单行文本，作为执行器的 ID。
+                String executorId = readContent(clientSocket.getInputStream());
+
+                // 执行任务，并获取执行结果。
+                ExecuteResult executeResult = doExecute(executorId);
+                return new ArrivalResponse(false, false, null, executeResult);
+            } catch (Exception e) {
+                LOGGER.warn("执行任务时发生异常, 异常信息如下: ", e);
+                return new ArrivalResponse(false, true, e.getMessage(), null);
+            }
+        }
+
+        private boolean checkAddress(String address) {
+            // 先做一个大概率情形判断。
+            if (StringUtils.isEmpty(blacklistRegex) && StringUtils.isEmpty(whitelistRegex)) {
+                return true;
+            }
+
+            // 判断标准化地址是否能通过黑白名单。
+            if (StringUtils.isNotEmpty(blacklistRegex) && address.matches(blacklistRegex)) {
+                return false;
+            }
+            if (StringUtils.isEmpty(whitelistRegex)) {
+                return true;
+            }
+            return address.matches(whitelistRegex);
         }
 
         private ExecuteResult doExecute(String executorId) throws Exception {

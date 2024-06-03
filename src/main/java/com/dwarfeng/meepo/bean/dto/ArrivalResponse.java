@@ -11,24 +11,38 @@ import com.dwarfeng.subgrade.stack.bean.dto.Dto;
  */
 public class ArrivalResponse implements Dto {
 
-    private static final long serialVersionUID = -6228964813557932034L;
-    
-    @JSONField(name = "exception_flag", ordinal = 1)
+    private static final long serialVersionUID = 2276399178581642995L;
+
+    @JSONField(name = "address_blocked_flag", ordinal = 1)
+    private boolean addressBlockedFlag;
+
+    @JSONField(name = "exception_flag", ordinal = 2)
     private boolean exceptionFlag;
 
-    @JSONField(name = "exception_message", ordinal = 2)
+    @JSONField(name = "exception_message", ordinal = 3)
     private String exceptionMessage;
 
-    @JSONField(name = "execute_info", ordinal = 3)
+    @JSONField(name = "execute_info", ordinal = 4)
     private ExecuteResult executeResult;
 
     public ArrivalResponse() {
     }
 
-    public ArrivalResponse(boolean exceptionFlag, String exceptionMessage, ExecuteResult executeResult) {
+    public ArrivalResponse(
+            boolean addressBlockedFlag, boolean exceptionFlag, String exceptionMessage, ExecuteResult executeResult
+    ) {
+        this.addressBlockedFlag = addressBlockedFlag;
         this.exceptionFlag = exceptionFlag;
         this.exceptionMessage = exceptionMessage;
         this.executeResult = executeResult;
+    }
+
+    public boolean isAddressBlockedFlag() {
+        return addressBlockedFlag;
+    }
+
+    public void setAddressBlockedFlag(boolean addressBlockedFlag) {
+        this.addressBlockedFlag = addressBlockedFlag;
     }
 
     public boolean isExceptionFlag() {
@@ -58,7 +72,8 @@ public class ArrivalResponse implements Dto {
     @Override
     public String toString() {
         return "ArrivalResponse{" +
-                "exceptionFlag=" + exceptionFlag +
+                "addressBlockedFlag=" + addressBlockedFlag +
+                ", exceptionFlag=" + exceptionFlag +
                 ", exceptionMessage='" + exceptionMessage + '\'' +
                 ", executeResult=" + executeResult +
                 '}';
