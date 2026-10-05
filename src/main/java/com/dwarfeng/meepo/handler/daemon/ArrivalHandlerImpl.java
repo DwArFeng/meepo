@@ -186,9 +186,9 @@ public class ArrivalHandlerImpl implements ArrivalHandler {
         private void doRun() {
             while (!serverSocket.isClosed()) {
                 try {
-                    // 接受新的连接
+                    // 接受新的连接。
                     Socket clientSocket = serverSocket.accept();
-                    // 对每个连接启动一个新的线程来处理业务
+                    // 对每个连接启动一个新的线程来处理业务。
                     LOGGER.info("接受到新的连接，处理中...");
                     String workerHandle = UUID.randomUUID().toString();
                     WorkerTask workerTask = ctx.getBean(

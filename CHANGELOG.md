@@ -4,6 +4,9 @@
 
 ### 功能构建
 
+- 项目类优化注释、文档注释格式、代码换行格式。
+  - com.dwarfeng.meepo.handler.daemon.ArrivalHandlerImpl。
+
 - 依赖升级。
   - 升级 `spring-telqos` 依赖版本为 `2.0.3.a` 并解决兼容性问题，以应用其新功能。
   - 升级 `spring-terminator` 依赖版本为 `2.0.3.a` 并解决兼容性问题，以应用其新功能。
