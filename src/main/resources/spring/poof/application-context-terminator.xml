@@ -9,5 +9,7 @@
         http://dwarfeng.com/schema/spring-terminator/spring-terminator.xsd"
 >
 
-    <terminator:bean/>
+    <terminator:config/>
+    <terminator:handler/>
+    <terminator:qos/>
 </beans>
