@@ -4,6 +4,12 @@
 
 ### 功能构建
 
+- 优化部分说明文件中的格式。
+  - libext/daemon/README.md。
+  - libext/poof/README.md。
+  - optext/daemon/README.md。
+  - optext/poof/README.md。
+
 - 项目类优化注释、文档注释格式、代码换行格式。
   - com.dwarfeng.meepo.handler.daemon.ArrivalHandlerImpl。
 
