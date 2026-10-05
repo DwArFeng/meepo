@@ -35,7 +35,7 @@ import java.util.concurrent.locks.ReentrantLock;
 @Component
 public class ArrivalHandlerImpl implements ArrivalHandler {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(ExecuteHandlerImpl.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(ArrivalHandlerImpl.class);
 
     private final ApplicationContext ctx;
 

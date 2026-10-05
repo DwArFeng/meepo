@@ -33,7 +33,8 @@
 
 ### Bug 修复
 
-- (无)
+- 修复部分代码中错误的 `LOGGER` 目标类。
+  - com.dwarfeng.meepo.handler.daemon.ArrivalHandlerImpl。
 
 ### 功能移除
 
