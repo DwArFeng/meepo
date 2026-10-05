@@ -4,6 +4,8 @@
 
 ### 功能构建
 
+- 调整 Poof 退出码，以适配 Linux 系统。
+
 - 优化部分说明文件中的格式。
   - libext/daemon/README.md。
   - libext/poof/README.md。
