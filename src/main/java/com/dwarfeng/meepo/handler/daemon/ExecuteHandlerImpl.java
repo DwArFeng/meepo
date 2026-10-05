@@ -466,6 +466,8 @@ public class ExecuteHandlerImpl implements ExecuteHandler {
             }
         }
 
+        // 为了代码的可读性，不简化此方法。
+        @SuppressWarnings("SameParameterValue")
         private int runProcess(ExecuteInfo.CommandInfo commandInfo, Map<String, String> argMap, File dir)
                 throws Exception {
             // 展开参数。
